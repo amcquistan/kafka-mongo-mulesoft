@@ -1,0 +1,91 @@
+{
+  "name": "Order",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "status",
+      "type": "string"
+    },
+    {
+      "name": "created",
+      "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "customer",
+      "type": {
+        "type": "record",
+        "name": "Customer",
+        "fields": [{
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "first_name",
+          "type": "string"
+        },
+        {
+          "name": "last_name",
+          "type": "string"
+        },
+        {
+          "name": "created",
+          "type": {
+              "type": "long",
+              "logicalType": "timestamp-millis"
+          }
+        }]
+      }
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "LineItem",
+          "type": "record",
+          "fields": [
+            {
+              "name": "product",
+              "type": {
+                "name": "Product",
+                "type": "record",
+                "fields": [
+                  {
+                    "name": "id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "name": "price",
+                    "type": "int"
+                  },
+                  {
+                    "name": "created",
+                    "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-millis"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

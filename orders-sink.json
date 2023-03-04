@@ -1,0 +1,13 @@
+{
+  "name": "orders-sink",
+  "connection.uri":"mongodb://developer:Develop3r@mongodb:27017",
+  "database":"sales",
+  "collection": "orders",
+  "topics": "orders",
+  "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+  "tasks.max": "1",
+  "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+  "key.converter.schemas.enable": "false",
+  "value.converter":"io.confluent.connect.avro.AvroConverter",
+  "value.converter.schema.registry.url":"http://schema-registry:8081"
+}
