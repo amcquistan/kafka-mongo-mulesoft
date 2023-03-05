@@ -1,5 +1,7 @@
 # Integration Pattern: Kafka, Kafka Connect, MongoDB & MuleSoft
 
+<img src="./kafka-mongo-mulesoft.jpg">
+
 Docker based example integration pattern utilizing MongoDB, Apache Kafka, and MuleSoft. 
 A Python based program generates fictitious sales data representing customer, product, and order domains. The customer and product domain data are persisted directly to MongoDB within the Python program where as the orders are published into Kafka brokers. Therefor, Apache Kafka is the data ingestion target, Kafka Connect is then used as a configuration driven approach to pipeline data from Kafka into MongoDB, and finally the MuleSoft rapid API development platform is utilized for serving data from MongoDB via a REST interface. 
 
