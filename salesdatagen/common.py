@@ -10,6 +10,7 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroSerializer
 
 from pydantic import BaseModel
+from pymongo import MongoClient
 
 
 logging.basicConfig(level=logging.INFO)
@@ -17,22 +18,30 @@ logger = logging.getLogger()
 
 
 class BaseRepo(ABC):
-    def __init__(self, db_client, db_name, producer, topic, *args, **kwargs):
+    def __init__(self, db_client, db_name, db_collection, producer, topic, *args, **kwargs):
         self.db_client = db_client
         self.producer = producer
-        self.db_name = db_name
+        self.db = db_client[db_name]
+        self.db_collection = self.db[db_collection]
         self.topic = topic
         self.items = []
 
-    def save(self, model: BaseModel) -> BaseModel:
-        self.items.append(model)
+    def save(self, model: BaseModel, cache=True) -> BaseModel:
+        self.db_collection.insert_one(model.dict())
+        if cache:
+          self.items.append(model)
+        return model
 
     def fetch(self, id: str) -> BaseModel:
         results = filter(lambda x: x.id == id, self.items)
-        return results[0]
+        if results:
+          return results[0]
+        return self.db_collection.find_one({'id': id})
 
-    def fetch_all(self) -> List[BaseModel]:
-        return self.items
+    def fetch_all(self, cache_only=False) -> List[BaseModel]:
+        if cache_only:
+          return self.items
+        return self.db_collection.find()
 
     def publish(self, model: BaseModel):
         self.producer.produce(
@@ -43,8 +52,6 @@ class BaseRepo(ABC):
         )
 
     def flush(self):
-       if self.db_client:
-          pass
        if self.producer:
           self.producer.flush()
 
@@ -77,3 +84,6 @@ class ProducerCallback:
           partition {msg.partition()}
           at offset {msg.offset()}""")
 
+
+def make_db_client(protocol, username, password, host) -> MongoClient:
+   return MongoClient(f"{protocol}://{username}:{password}@{host}/?retryWrites=true&w=majority")

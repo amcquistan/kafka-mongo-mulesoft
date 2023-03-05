@@ -41,6 +41,11 @@ CUSTOMER_AVRO_SCHEMA = '''
 
 
 class CustomerRepo(BaseRepo):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, db_client, db_name, db_collection, producer, topic, *args, **kwargs):
+        super().__init__(db_client, db_name, db_collection, producer, topic, *args, **kwargs)
 
+    # def save(self, model: BaseModel, cache=True) -> BaseModel:
+    #     self.db_client.custermers.insert_one(model.dict())
+    #     return super().save(model, cache=cache)
+
+        
