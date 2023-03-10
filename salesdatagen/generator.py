@@ -14,6 +14,7 @@ from salesdatagen.product import Product
 from salesdatagen.order import Order, LineItem
 
 
+
 def created_timestamp() -> int:
     """current timestamp in milliseconds since epoch"""
     return int(datetime.now().timestamp() * 1000)
