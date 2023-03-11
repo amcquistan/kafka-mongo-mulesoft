@@ -7,14 +7,32 @@ def customer_revenue(db_client, db_name, src_collection, dst_collection):
     db_collection.aggregate([
         {
             "$project": {
-                "customer_name": { "$concat": ["$customer.first_name", " ", "$customer.last_name"] },
-                "product_revenue": { "$multiply": ["items.product.price", "items.quantity"] }
+                "customer": { "$concat": ["$customer.first_name", " ", "$customer.last_name"] },
+                "revenue": {
+                    "$map": {
+                        "input": "$items",
+                        "as": "item",
+                        "in": {
+                            "item_product": "$$item.product.name",
+                            "item_revenue": {
+                                "$multiply": ["$$item.product.price", "$$item.quantity"]
+                            }
+                        }
+                    }
+                }
             }
         },
         {
             "$group": {
-                "_id": "$customer_name",
-                "revenue": { "$sum": "$product_revenue" }
+                "_id": "$customer",
+                "revenue": {
+                    "$sum": { "$sum": "$revenue.item_revenue" }
+                }
+            }
+        },
+        {
+            "$merge": {
+                "into": "customer_revenue"
             }
         }
     ])
