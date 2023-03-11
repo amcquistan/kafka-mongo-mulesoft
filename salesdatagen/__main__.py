@@ -5,7 +5,6 @@ from argparse import ArgumentParser
 from dotenv import load_dotenv
 
 from salesdatagen import generator
-from salesdatagen import aggregation
 from salesdatagen.common import make_db_client, make_producer
 from salesdatagen.customer import CustomerRepo, CUSTOMER_AVRO_SCHEMA
 from salesdatagen.order import OrderRepo, ORDER_AVRO_SCHEMA
@@ -45,5 +44,3 @@ if __name__ == '__main__':
         interval=args.interval,
         intervals=args.intervals
     )
-
-    aggregation.customer_revenue(db_client, "sales", "orders", "customer_revenue")

@@ -8,6 +8,7 @@ from typing import List
 
 from faker import Faker
 
+from salesdatagen import aggregation
 from salesdatagen.customer import Customer
 from salesdatagen.common import BaseRepo
 from salesdatagen.product import Product
@@ -85,6 +86,9 @@ def generate_orders(
             repo.publish(order)
 
         repo.flush()
+
+        aggregation.customer_revenue(repo.db_client, "sales", "orders", "customer_revenue")
+        aggregation.product_revenue(repo.db_client, "sales", "orders", "product_revenue")
 
         sleep(interval)
         i += 1
