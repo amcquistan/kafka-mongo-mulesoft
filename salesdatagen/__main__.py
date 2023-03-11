@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from dotenv import load_dotenv
 
 from salesdatagen import generator
+from salesdatagen import aggregation
 from salesdatagen.common import make_db_client, make_producer
 from salesdatagen.customer import CustomerRepo, CUSTOMER_AVRO_SCHEMA
 from salesdatagen.order import OrderRepo, ORDER_AVRO_SCHEMA
@@ -24,15 +25,15 @@ if __name__ == '__main__':
 
     producer_args = (os.environ['SCHEMA_REGISTRY'], os.environ['BOOTSTRAP_BROKERS'])
 
-    db_clinet = make_db_client(os.environ['DB_PROTOCOL'], os.environ['DB_USER'], os.environ['DB_PASSWORD'], os.environ['DB_HOST'])
+    db_client = make_db_client(os.environ['DB_PROTOCOL'], os.environ['DB_USER'], os.environ['DB_PASSWORD'], os.environ['DB_HOST'])
 
     customer_producer = make_producer(CUSTOMER_AVRO_SCHEMA, *producer_args)
     product_producer = make_producer(PRODUCT_AVRO_SCHEMA, *producer_args)
     order_producer = make_producer(ORDER_AVRO_SCHEMA, *producer_args)
 
-    customer_repo = CustomerRepo(db_clinet, os.environ['DB_NAME'], 'customers', customer_producer, 'customers')
-    product_repo = ProductRepo(db_clinet, os.environ['DB_NAME'], 'products', product_producer, 'products')
-    order_repo = OrderRepo(db_clinet, os.environ['DB_NAME'], 'orders', order_producer, 'orders')
+    customer_repo = CustomerRepo(db_client, os.environ['DB_NAME'], 'customers', customer_producer, 'customers')
+    product_repo = ProductRepo(db_client, os.environ['DB_NAME'], 'products', product_producer, 'products')
+    order_repo = OrderRepo(db_client, os.environ['DB_NAME'], 'orders', order_producer, 'orders')
 
     generator.seed_customers(customer_repo)
     generator.seed_products(product_repo)
@@ -44,3 +45,5 @@ if __name__ == '__main__':
         interval=args.interval,
         intervals=args.intervals
     )
+
+    aggregation.customer_revenue(db_client, "sales", "orders", "customer_revenue")

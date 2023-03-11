@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 
-def customer_revenue(db_client, db_name, src_collection, dst_collection):
+def customer_revenue(db_client: MongoClient, db_name, src_collection, dst_collection):
     db = db_client[db_name]
     db_collection = db[src_collection]
     db_collection.aggregate([
@@ -32,12 +32,13 @@ def customer_revenue(db_client, db_name, src_collection, dst_collection):
         },
         {
             "$merge": {
-                "into": "customer_revenue"
+                "into": dst_collection
             }
         }
     ])
 
 
 
-def product_revenue(db_client, db_name, src_collection, dst_collection):
-    pass
+def product_revenue(db_client: MongoClient, db_name, src_collection, dst_collection):
+    db = db_client[db_name]
+    db_collection = db[src_collection]
